@@ -699,6 +699,12 @@ func parseEvent(raw string) (Event, bool) {
 	}
 	ts := parseTS(asString(obj["timestamp"]))
 	role := asString(obj["type"])
+	// Only the conversation itself: newer Claude Code versions also write
+	// bookkeeping lines into the transcript, some (api-request-blob) with a
+	// copy of a message in them but no timestamp.
+	if role != "user" && role != "assistant" {
+		return Event{}, false
+	}
 
 	msg, _ := obj["message"].(map[string]any)
 	if msg == nil {
