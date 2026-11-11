@@ -755,6 +755,16 @@ func parseEvent(raw string) (Event, bool) {
 				}
 			}
 		}
+		switch name {
+		case "AskUserQuestion": // the card says what Claude is asking
+			if qs, ok := inp["questions"].([]any); ok && len(qs) > 0 {
+				if q, ok := qs[0].(map[string]any); ok {
+					desc = asString(q["question"])
+				}
+			}
+		case "ExitPlanMode":
+			desc = "plan ready for review"
+		}
 		return Event{
 			TS:       ts,
 			Kind:     KindToolUse,
@@ -902,10 +912,18 @@ func isWaiting(events []Event, now time.Time) bool {
 		return false
 	}
 	last := events[len(events)-1]
+	if last.Kind == KindToolUse && asksUser(last.ToolName) {
+		return true // blocked on an answer until its tool_result comes back
+	}
 	if last.Kind != KindText {
 		return false
 	}
 	return now.Sub(last.TS) >= waitingAfter
+}
+
+// asksUser — tools that stop the session until the person answers.
+func asksUser(tool string) bool {
+	return tool == "AskUserQuestion" || tool == "ExitPlanMode"
 }
 
 func asString(v any) string {
