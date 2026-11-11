@@ -1,50 +1,38 @@
 # Install
 
-The wall Go binary is wired into the system via a wrapper script kept in
-`LinuxConfig/scripts` and a symlink in `~/.local/bin`. This matches the
-existing pattern used for `claude-switcher`, `nav`, etc.
+## Build
 
-## Layout
-
-```
-~/Github/wall/go/wall                                # compiled binary
-~/Github/LinuxConfig/scripts/wall/wall.sh            # wrapper (exec's the binary)
-~/.local/bin/wall           → .../LinuxConfig/scripts/wall/wall.sh
-```
-
-`~/.local/bin` is already on `$PATH`, so `wall` launches from anywhere.
-
-## One-time setup (already done)
+Needs Go ≥ 1.22.
 
 ```bash
-mkdir -p ~/Github/LinuxConfig/scripts/wall
-
-cat > ~/Github/LinuxConfig/scripts/wall/wall.sh <<'EOF'
-#!/usr/bin/env bash
-exec /home/stefano/Github/wall/go/wall "$@"
-EOF
-
-chmod +x ~/Github/LinuxConfig/scripts/wall/wall.sh
-
-ln -sf ~/Github/LinuxConfig/scripts/wall/wall.sh \
-       ~/.local/bin/wall
-```
-
-## Rebuild flow
-
-After editing Go sources:
-
-```bash
-cd ~/Github/wall/go
+git clone https://github.com/stfrigerio/wall
+cd wall/go
 go build -o wall .
 ```
 
-The wrapper execs the binary by absolute path, so there is no "re-install"
-step — the next `wall` invocation runs the freshly built binary.
+## Put it on your `$PATH`
+
+Most Linux systems already have a `wall` command (util-linux's, which
+broadcasts a message to every terminal) in `/usr/bin`. Either install this one
+under another name:
+
+```bash
+mkdir -p ~/.local/bin
+ln -sf "$PWD/wall" ~/.local/bin/claude-wall
+```
+
+or keep the name `wall` and make sure `~/.local/bin` comes before `/usr/bin`
+in your `$PATH`:
+
+```bash
+ln -sf "$PWD/wall" ~/.local/bin/wall
+```
+
+The link points at the binary in the repo, so after a `git pull` a rebuild
+(`go build -o wall .`) is all an update takes.
 
 ## Uninstall
 
 ```bash
-rm ~/.local/bin/wall
-rm -rf ~/Github/LinuxConfig/scripts/wall
+rm ~/.local/bin/claude-wall    # or ~/.local/bin/wall
 ```

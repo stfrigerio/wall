@@ -91,6 +91,9 @@ control socket. Requires `allow_remote_control yes` and a predictable
   thinking / tool-use / text / user-prompt events. Tool results are
   dropped (noise).
 - **State** — working = transcript mtime ahead of last visible event
-  (hidden blocks streaming); waiting = last event is text ≥ 3s ago.
+  (hidden blocks streaming); waiting = last event is text ≥ 3s ago, or a
+  question (AskUserQuestion, a plan up for approval) not answered yet, with
+  the question on the card. Permission prompts don't show in the transcript,
+  so a session waiting on one still reads as working.
 - **Layout** — up to 3×3 cards per page; more sessions paginate.
   Pane order is stable across scans; `ctrl+arrow` reorders manually.
