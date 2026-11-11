@@ -9,6 +9,8 @@ event log (thinking / tool use / text / prompts) per session. Hit
 **Enter** to focus the Hyprland window behind the focused card, or
 **i** to inject a prompt directly into that claude's kitty pane.
 
+![wall: four Claude Code sessions on one wall, one of them waiting on a question](assets/demo.gif)
+
 ## Build
 
 Needs Go ≥ 1.22.
